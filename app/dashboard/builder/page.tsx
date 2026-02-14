@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { ResumeData } from "@/types/resume";
-import { generatePDF } from "@/lib/generatePDF";
+import { generatePDF } from "@/lib/generatePDF.client";
 
 import Header from "@/components/layout/Header";
 import MobileTabs from "@/components/layout/MobileTabs";
@@ -23,6 +23,7 @@ function BuilderContent() {
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const [resumeData, setResumeData] = useState<ResumeData>({
         name: "John Doe",
@@ -113,7 +114,18 @@ function BuilderContent() {
     };
 
     const handleDownload = async () => {
-        await generatePDF("resume-preview-id");
+        setIsDownloading(true);
+        try {
+            const success = await generatePDF("resume-preview");
+            if (!success) {
+                alert("Failed to download PDF. Please try again or check console for details.");
+            }
+        } catch (error) {
+            console.error("Download error:", error);
+            alert("An error occurred while downloading.");
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -123,7 +135,6 @@ function BuilderContent() {
             <Header
                 selectedTemplate={selectedTemplate}
                 setSelectedTemplate={setSelectedTemplate}
-                onDownload={handleDownload}
                 onSave={handleSave}
                 isSaving={isSaving}
             />
@@ -142,6 +153,8 @@ function BuilderContent() {
                             setResumeData={setResumeData}
                             selectedTemplate={selectedTemplate}
                             setSelectedTemplate={setSelectedTemplate}
+                            onDownload={handleDownload}
+                            isDownloading={isDownloading}
                         />
                     </div>
 

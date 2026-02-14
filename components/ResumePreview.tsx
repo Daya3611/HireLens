@@ -10,7 +10,7 @@ import TemplateFour from "./templates/TemplateFour";
 import TemplateFive from "./templates/TemplateFive";
 import TemplateSix from "./templates/TemplateSix";
 import TemplateSeven from "./templates/TemplateSeven";
-import { generatePDF } from "@/lib/generatePDF";
+import { generatePDF } from "@/lib/generatePDF.client";
 import {
     ZoomIn,
     ZoomOut,
@@ -221,7 +221,7 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
                         style={{ transformOrigin: "top center" }}
                     >
                         <div
-                            id="resume-preview-id"
+                            id="resume-preview"
                             ref={containerRef}
                             className="w-[210mm] min-h-[297mm] bg-white mx-auto overflow-hidden relative"
                             style={{ aspectRatio: "210/297" }}

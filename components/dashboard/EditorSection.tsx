@@ -12,6 +12,8 @@ import {
     Sparkles,
     Layout,
     CheckCircle2,
+    Download,
+    Loader2,
 } from "lucide-react";
 
 interface EditorSectionProps {
@@ -19,6 +21,8 @@ interface EditorSectionProps {
     setResumeData: React.Dispatch<React.SetStateAction<ResumeData>>;
     selectedTemplate: string;
     setSelectedTemplate: (template: string) => void;
+    onDownload: () => void;
+    isDownloading: boolean;
 }
 
 const templates = [
@@ -78,6 +82,8 @@ export default function EditorSection({
     setResumeData,
     selectedTemplate,
     setSelectedTemplate,
+    onDownload,
+    isDownloading,
 }: EditorSectionProps) {
     return (
         <div className="max-w-2xl mx-auto space-y-6 pb-20">
@@ -272,6 +278,32 @@ export default function EditorSection({
                         </p>
                     </div>
                 </div>
+            </motion.div>
+
+            {/* Download Button */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex justify-center pt-4"
+            >
+                <button
+                    onClick={onDownload}
+                    disabled={isDownloading}
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-3 rounded-xl hover:bg-gray-800 transition-colors font-medium text-base shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {isDownloading ? (
+                        <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <span>Generating PDF...</span>
+                        </>
+                    ) : (
+                        <>
+                            <Download className="w-5 h-5" />
+                            <span>Download Resume PDF</span>
+                        </>
+                    )}
+                </button>
             </motion.div>
         </div>
     );
