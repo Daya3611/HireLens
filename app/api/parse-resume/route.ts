@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { geminiModel } from "@/lib/gemini";
-import pdf from "pdf-parse";
+// @ts-ignore
+import pdf from "pdf-parse/lib/pdf-parse";
 import mammoth from "mammoth";
 
 export async function POST(req: Request) {

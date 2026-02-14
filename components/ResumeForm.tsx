@@ -16,6 +16,8 @@ import {
     ChevronDown,
     ChevronUp,
     GripVertical,
+    Code,
+    Globe,
 } from "lucide-react";
 
 interface ResumeFormProps {
@@ -209,6 +211,46 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
         setResumeData((prev) => ({ ...prev, education: newEducation }));
     };
 
+    const addProject = () => {
+        setResumeData((prev) => ({
+            ...prev,
+            projects: [
+                ...(prev.projects || []),
+                { name: "", link: "", description: "", technologies: [] },
+            ],
+        }));
+    };
+
+    const updateProject = (
+        index: number,
+        field: keyof NonNullable<ResumeData["projects"]>[0],
+        value: string
+    ) => {
+        const newProjects = [...(resumeData.projects || [])];
+        if (field === "technologies") {
+
+            const techs = value.split(",").map(t => t.trim()).filter(Boolean);
+            newProjects[index] = { ...newProjects[index], technologies: techs };
+        } else {
+            newProjects[index] = { ...newProjects[index], [field]: value };
+        }
+        setResumeData((prev) => ({ ...prev, projects: newProjects }));
+    };
+
+    // Helper for direct string update for simple fields, to avoid the specialized technology logic above if confusing
+    const updateProjectField = (index: number, field: string, value: string) => {
+        const newProjects = [...(resumeData.projects || [])];
+        // @ts-ignore
+        newProjects[index] = { ...newProjects[index], [field]: value };
+        setResumeData((prev) => ({ ...prev, projects: newProjects }));
+    }
+
+
+    const removeProject = (index: number) => {
+        const newProjects = (resumeData.projects || []).filter((_, i) => i !== index);
+        setResumeData((prev) => ({ ...prev, projects: newProjects }));
+    };
+
     return (
         <div className="space-y-4">
             {/* Personal Information */}
@@ -217,7 +259,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                     <InputField
                         label="Full Name"
                         name="name"
-                        value={resumeData.name}
+                        value={resumeData.name || ""}
                         onChange={handleChange}
                         placeholder="John Doe"
                         icon={User}
@@ -226,7 +268,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                         label="Email Address"
                         name="email"
                         type="email"
-                        value={resumeData.email}
+                        value={resumeData.email || ""}
                         onChange={handleChange}
                         placeholder="john@example.com"
                         icon={Mail}
@@ -235,7 +277,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                         label="Phone Number"
                         name="phone"
                         type="tel"
-                        value={resumeData.phone}
+                        value={resumeData.phone || ""}
                         onChange={handleChange}
                         placeholder="+1 (555) 123-4567"
                         icon={Phone}
@@ -252,7 +294,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                     <TextAreaField
                         label="Professional Summary"
                         name="summary"
-                        value={resumeData.summary}
+                        value={resumeData.summary || ""}
                         onChange={handleChange}
                         placeholder="Brief overview of your professional background and key achievements..."
                         rows={4}
@@ -420,6 +462,80 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                     >
                         <Plus className="w-5 h-5" />
                         Add Education
+                    </button>
+                </div>
+            </FormSection>
+
+            {/* Projects */}
+            <FormSection title="Projects" icon={Code}>
+                <div className="space-y-4 pt-4">
+                    <AnimatePresence>
+                        {(resumeData.projects || []).map((project, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                className="relative p-5 bg-neutral-50 rounded-xl border border-neutral-200 group"
+                            >
+                                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => removeProject(index)}
+                                        className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <InputField
+                                        label="Project Name"
+                                        name={`proj-name-${index}`}
+                                        value={project.name}
+                                        onChange={(e) => updateProjectField(index, "name", e.target.value)}
+                                        placeholder="Project Name"
+                                    />
+                                    <InputField
+                                        label="Project Link"
+                                        name={`proj-link-${index}`}
+                                        value={project.link || ""}
+                                        onChange={(e) => updateProjectField(index, "link", e.target.value)}
+                                        placeholder="https://github.com/..."
+                                        icon={Globe}
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <TextAreaField
+                                        label="Description"
+                                        name={`proj-desc-${index}`}
+                                        value={project.description}
+                                        onChange={(e) => updateProjectField(index, "description", e.target.value)}
+                                        placeholder="Briefly describe the project..."
+                                        rows={3}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-neutral-700 mb-1.5">
+                                        Technologies (comma separated)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={(project.technologies || []).join(", ")}
+                                        onChange={(e) => updateProject(index, "technologies", e.target.value)}
+                                        placeholder="React, generic-ui, TypeScript"
+                                        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-neutral-400"
+                                    />
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+
+                    <button
+                        onClick={addProject}
+                        className="w-full py-3 border-2 border-dashed border-neutral-300 rounded-xl text-neutral-600 font-semibold hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all flex items-center justify-center gap-2"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Add Project
                     </button>
                 </div>
             </FormSection>

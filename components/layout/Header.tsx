@@ -25,26 +25,7 @@ export default function Header({
             </div>
 
             <div className="flex items-center gap-4">
-                <div className="hidden md:flex bg-gray-100 rounded-lg p-1">
-                    <button
-                        onClick={() => setSelectedTemplate("one")}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${selectedTemplate === "one"
-                            ? "bg-white shadow-sm text-blue-600"
-                            : "text-gray-500 hover:text-gray-900"
-                            }`}
-                    >
-                        Modern
-                    </button>
-                    <button
-                        onClick={() => setSelectedTemplate("two")}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${selectedTemplate === "two"
-                            ? "bg-white shadow-sm text-blue-600"
-                            : "text-gray-500 hover:text-gray-900"
-                            }`}
-                    >
-                        Professional
-                    </button>
-                </div>
+
 
                 {onSave && (
                     <button

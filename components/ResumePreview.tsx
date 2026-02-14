@@ -5,6 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ResumeData } from "@/types/resume";
 import TemplateOne from "./templates/TemplateOne";
 import TemplateTwo from "./templates/TemplateTwo";
+import TemplateThree from "./templates/TemplateThree";
+import TemplateFour from "./templates/TemplateFour";
+import TemplateFive from "./templates/TemplateFive";
+import TemplateSix from "./templates/TemplateSix";
+import TemplateSeven from "./templates/TemplateSeven";
 import { generatePDF } from "@/lib/generatePDF";
 import {
     ZoomIn,
@@ -27,6 +32,11 @@ interface ResumePreviewProps {
 const templates = {
     one: { name: "Modern", color: "from-blue-500 to-indigo-600" },
     two: { name: "Professional", color: "from-neutral-700 to-neutral-900" },
+    three: { name: "Minimalist", color: "from-stone-500 to-stone-700" },
+    four: { name: "Creative", color: "from-purple-500 to-violet-600" },
+    five: { name: "Tech", color: "from-blue-600 to-cyan-500" },
+    six: { name: "Executive", color: "from-emerald-700 to-emerald-900" },
+    seven: { name: "Pink/Bold", color: "from-rose-500 to-pink-600" },
 };
 
 export default function ResumePreview({ data, template }: ResumePreviewProps) {
@@ -89,6 +99,16 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
         switch (template) {
             case "two":
                 return <TemplateTwo data={data} />;
+            case "three":
+                return <TemplateThree data={data} />;
+            case "four":
+                return <TemplateFour data={data} />;
+            case "five":
+                return <TemplateFive data={data} />;
+            case "six":
+                return <TemplateSix data={data} />;
+            case "seven":
+                return <TemplateSeven data={data} />;
             case "one":
             default:
                 return <TemplateOne data={data} />;

@@ -1,21 +1,52 @@
-export interface ResumeData {
+export interface Experience {
+  role: string;
+  company: string;
+  duration: string;
+  description: string;
+  achievements?: string[];
+}
+
+export interface Education {
+  degree: string;
+  institution: string;
+  year: string;
+  gpa?: string;
+}
+
+export interface Project {
   name: string;
-  email: string;
-  phone: string;
-  summary: string;
+  link?: string;
+  description: string;
+  technologies?: string[];
+}
+
+export interface Certification {
+  name: string;
+  issuer: string;
+  year: string;
+}
+
+export interface Language {
+  name: string;
+  level: string;
+}
+
+export interface ResumeData {
+  name?: string;
+  title?: string;
+  email?: string;
+  phone?: string;
   location?: string;
+  website?: string;
+  linkedin?: string;
+  github?: string;
+  summary?: string;
   skills: string[];
-  education: {
-    degree: string;
-    institution: string;
-    year: string;
-  }[];
-  experience: {
-    role: string;
-    company: string;
-    duration: string;
-    description: string;
-  }[];
+  experience: Experience[];
+  education: Education[];
+  projects?: Project[];
+  certifications?: Certification[];
+  languages?: Language[];
 }
 
 export interface ATSAnalysis {

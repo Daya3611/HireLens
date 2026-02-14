@@ -36,6 +36,41 @@ const templates = [
         color: "from-neutral-700 to-neutral-900",
         features: ["Traditional format", "ATS optimized", "Executive style"],
     },
+    {
+        id: "three",
+        name: "Minimalist",
+        description: "Simple & Clean",
+        color: "from-stone-500 to-stone-700",
+        features: ["Serif typography", "Centered layout", "Whitespace focus"],
+    },
+    {
+        id: "four",
+        name: "Creative",
+        description: "Bold & Visual",
+        color: "from-purple-500 to-violet-600",
+        features: ["Dark sidebar", "Unique header", "Standout design"],
+    },
+    {
+        id: "five",
+        name: "Tech",
+        description: "Developer Ready",
+        color: "from-blue-600 to-cyan-500",
+        features: ["Code-inspired", "Skill-focused", "Dense layout"],
+    },
+    {
+        id: "six",
+        name: "Executive",
+        description: "C-Level Format",
+        color: "from-emerald-700 to-emerald-900",
+        features: ["Highly structured", "Traditional feel", "Formal tone"],
+    },
+    {
+        id: "seven",
+        name: "Modern Grid",
+        description: "Grid Layout",
+        color: "from-rose-500 to-pink-600",
+        features: ["Grid structure", "Distinct sections", "Vibrant accents"],
+    },
 ];
 
 export default function EditorSection({
@@ -84,8 +119,8 @@ export default function EditorSection({
                             key={template.id}
                             onClick={() => setSelectedTemplate(template.id)}
                             className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${selectedTemplate === template.id
-                                    ? "border-indigo-600 bg-indigo-50/50 shadow-md"
-                                    : "border-neutral-200 bg-white hover:border-neutral-300"
+                                ? "border-indigo-600 bg-indigo-50/50 shadow-md"
+                                : "border-neutral-200 bg-white hover:border-neutral-300"
                                 }`}
                         >
                             {selectedTemplate === template.id && (
@@ -124,14 +159,14 @@ export default function EditorSection({
                             Switch templates anytime without losing your data.
                         </p>
 
-                        <div className="flex gap-3">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
                             {templates.map((template) => (
                                 <button
                                     key={template.id}
                                     onClick={() => setSelectedTemplate(template.id)}
                                     className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-300 ${selectedTemplate === template.id
-                                            ? "border-indigo-600 bg-white shadow-md"
-                                            : "border-transparent bg-white/60 hover:bg-white hover:shadow-sm"
+                                        ? "border-indigo-600 bg-white shadow-md"
+                                        : "border-transparent bg-white/60 hover:bg-white hover:shadow-sm"
                                         }`}
                                 >
                                     <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${template.color} shadow-sm`} />
@@ -177,7 +212,7 @@ export default function EditorSection({
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden"
             >
-                <div className="p-6">
+                {/* <div className="p-6">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
                             <FileUp className="w-5 h-5 text-green-600" />
@@ -190,7 +225,7 @@ export default function EditorSection({
                         </div>
                     </div>
                     <ResumeParser onDataParsed={setResumeData} />
-                </div>
+                </div> */}
             </motion.div>
 
             {/* Resume Form */}
