@@ -1,10 +1,6 @@
 import { ResumeData } from "@/types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
-import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal, Key } from "react";
+
 
 interface TemplateProps {
   data: ResumeData;
@@ -38,7 +34,7 @@ export default function TemplateThree({ data }: TemplateProps) {
             <p className="text-emerald-100 text-lg mb-4 font-medium">
               {data.title || "Professional Title"}
             </p>
-            
+
             {/* Contact Grid */}
             <div className="flex flex-wrap gap-4 text-sm">
               {data.email && (
@@ -126,7 +122,7 @@ export default function TemplateThree({ data }: TemplateProps) {
                   <div key={index} className="relative">
                     {/* Timeline Dot */}
                     <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 border-4 border-white shadow-sm" />
-                    
+
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
                       <div>
                         <h3 className="text-lg font-bold text-neutral-900">
@@ -140,7 +136,7 @@ export default function TemplateThree({ data }: TemplateProps) {
                         {exp.duration}
                       </span>
                     </div>
-                    
+
                     <p className="text-neutral-600 text-sm leading-relaxed whitespace-pre-line">
                       {exp.description}
                     </p>
@@ -148,11 +144,11 @@ export default function TemplateThree({ data }: TemplateProps) {
                     {/* Achievements if available */}
                     {exp.achievements && exp.achievements.length > 0 && (
                       <ul className="mt-3 space-y-1">
-                        {exp.achievements.map((achievement: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, idx: Key | null | undefined) => (
+                        {exp.achievements.map((achievement, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-sm text-neutral-600">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
                             {achievement}
-                          </li> 
+                          </li>
                         ))}
                       </ul>
                     )}
@@ -175,7 +171,7 @@ export default function TemplateThree({ data }: TemplateProps) {
               </div>
 
               <div className="grid gap-4 ml-5">
-                {data.projects.map((project: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; link: string | undefined; description: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; technologies: any[]; }, index: Key | null | undefined) => (
+                {data.projects.map((project, index) => (
                   <div
                     key={index}
                     className="p-4 bg-neutral-50 rounded-xl border border-neutral-100 hover:border-emerald-200 transition-colors"
@@ -197,7 +193,7 @@ export default function TemplateThree({ data }: TemplateProps) {
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {project.technologies?.map((tech: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined, idx: Key | null | undefined) => (
+                      {project.technologies?.map((tech, idx) => (
                         <span
                           key={idx}
                           className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded"
@@ -282,7 +278,7 @@ export default function TemplateThree({ data }: TemplateProps) {
                 Certifications
               </h2>
               <div className="space-y-3">
-                {data.certifications.map((cert: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; issuer: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; year: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
+                {data.certifications.map((cert, index) => (
                   <div
                     key={index}
                     className="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg"
@@ -312,7 +308,7 @@ export default function TemplateThree({ data }: TemplateProps) {
                 Languages
               </h2>
               <div className="space-y-2">
-                {data.languages.map((lang: { name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; level: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }, index: Key | null | undefined) => (
+                {data.languages.map((lang, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between text-sm"
@@ -329,7 +325,7 @@ export default function TemplateThree({ data }: TemplateProps) {
         </div>
       </div>
 
-      
+
     </div>
   );
 }

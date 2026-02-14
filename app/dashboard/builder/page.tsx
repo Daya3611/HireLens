@@ -12,7 +12,10 @@ import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-export default function BuilderPage() {
+import { Suspense } from "react";
+
+
+function BuilderContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const resumeId = searchParams.get("id");
@@ -155,5 +158,13 @@ export default function BuilderPage() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function BuilderPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BuilderContent />
+        </Suspense>
     );
 }
