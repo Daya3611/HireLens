@@ -11,6 +11,9 @@ export default function TemplateOne({ data }: TemplateProps) {
                 <h1 className="text-4xl font-bold uppercase tracking-wider text-gray-900 mb-2">
                     {data.name || "YOUR NAME"}
                 </h1>
+                <p className="text-xl text-gray-600 font-medium mb-4 uppercase tracking-wide">
+                    {data.title || "Professional Title"}
+                </p>
                 <div className="flex flex-wrap text-sm text-gray-600 gap-4 mt-2">
                     {data.email && (
                         <span className="flex items-center gap-1">

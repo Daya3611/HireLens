@@ -137,6 +137,8 @@ function BuilderContent() {
                 setSelectedTemplate={setSelectedTemplate}
                 onSave={handleSave}
                 isSaving={isSaving}
+                onDownload={handleDownload}
+                isDownloading={isDownloading}
             />
 
             <MobileTabs activeTab={activeTab} setActiveTab={setActiveTab} />

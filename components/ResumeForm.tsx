@@ -264,6 +264,14 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                         icon={User}
                     />
                     <InputField
+                        label="Professional Title"
+                        name="title"
+                        value={resumeData.title || ""}
+                        onChange={handleChange}
+                        placeholder="Software Engineer"
+                        icon={Briefcase}
+                    />
+                    <InputField
                         label="Email Address"
                         name="email"
                         type="email"

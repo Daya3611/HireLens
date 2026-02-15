@@ -77,8 +77,8 @@ export default function Navbar() {
                 animate={{ y: 0 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                        ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-neutral-200/20 border-b border-neutral-100"
-                        : "bg-white/50 backdrop-blur-sm"
+                    ? "bg-white/90 backdrop-blur-xl shadow-lg shadow-neutral-200/20 border-b border-neutral-100"
+                    : "bg-white/50 backdrop-blur-sm"
                     }`}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -108,8 +108,8 @@ export default function Navbar() {
                                         key={link.name}
                                         href={link.href}
                                         className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${active
-                                                ? "text-blue-600"
-                                                : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
+                                            ? "text-blue-600"
+                                            : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100"
                                             }`}
                                     >
                                         {active && (
@@ -129,9 +129,9 @@ export default function Navbar() {
                         {/* Right Side Actions */}
                         <div className="flex items-center gap-3">
                             {loading ? (
-                                <div className="w-9 h-9 rounded-full bg-neutral-200 animate-pulse" />
+                                <div className="w-9 h-9 rounded-full bg-neutral-200 animate-pulse hidden md:block" />
                             ) : user ? (
-                                <div className="relative" ref={dropdownRef}>
+                                <div className="relative hidden md:block" ref={dropdownRef}>
                                     <button
                                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                         className="flex items-center gap-2 p-1.5 pr-3 rounded-full hover:bg-neutral-100 transition-all duration-300 border border-transparent hover:border-neutral-200"
@@ -192,8 +192,8 @@ export default function Navbar() {
                                                                 href={link.href}
                                                                 onClick={() => setIsDropdownOpen(false)}
                                                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active
-                                                                        ? "bg-blue-50 text-blue-600"
-                                                                        : "text-neutral-700 hover:bg-neutral-50"
+                                                                    ? "bg-blue-50 text-blue-600"
+                                                                    : "text-neutral-700 hover:bg-neutral-50"
                                                                     }`}
                                                             >
                                                                 <Icon className={`w-4 h-4 ${active ? "text-blue-600" : "text-neutral-400"}`} />
@@ -259,6 +259,7 @@ export default function Navbar() {
                 {isMobileMenuOpen && (
                     <>
                         <motion.div
+                            key="mobile-backdrop"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -266,6 +267,7 @@ export default function Navbar() {
                             className="fixed inset-0 bg-neutral-900/20 backdrop-blur-sm z-40 md:hidden"
                         />
                         <motion.div
+                            key="mobile-menu"
                             initial={{ opacity: 0, x: "100%" }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: "100%" }}
@@ -333,8 +335,8 @@ export default function Navbar() {
                                                     href={link.href}
                                                     onClick={() => setIsMobileMenuOpen(false)}
                                                     className={`flex items-center gap-3 p-4 rounded-2xl font-medium transition-colors ${active
-                                                            ? "bg-blue-50 text-blue-600"
-                                                            : "text-neutral-700 hover:bg-neutral-50"
+                                                        ? "bg-blue-50 text-blue-600"
+                                                        : "text-neutral-700 hover:bg-neutral-50"
                                                         }`}
                                                 >
                                                     <Icon className={`w-5 h-5 ${active ? "text-blue-600" : "text-neutral-400"}`} />
