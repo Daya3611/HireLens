@@ -48,6 +48,50 @@ export default function TemplateOne({ data }: TemplateProps) {
                         </div>
                     </section>
                 )}
+                {/* Projects */}
+                {data.projects && data.projects.length > 0 && (
+                    <section>
+                        <h3 className="text-lg font-bold uppercase tracking-widest border-b border-gray-300 mb-4 pb-1">
+                            Projects
+                        </h3>
+                        <div className="space-y-6">
+                            {data.projects.map((project, index) => (
+                                <div key={index}>
+                                    <div className="flex justify-between items-baseline mb-1">
+                                        <h4 className="text-md font-bold text-gray-900">
+                                            {project.name}
+                                            {project.link && (
+                                                <a
+                                                    href={project.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="ml-2 text-xs text-blue-600 hover:underline font-normal"
+                                                >
+                                                    (Link)
+                                                </a>
+                                            )}
+                                        </h4>
+                                    </div>
+                                    <p className="text-sm text-gray-600 whitespace-pre-line mb-2">
+                                        {project.description}
+                                    </p>
+                                    {project.technologies && project.technologies.length > 0 && (
+                                        <div className="flex flex-wrap gap-1">
+                                            {project.technologies.map((tech, i) => (
+                                                <span
+                                                    key={i}
+                                                    className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs"
+                                                >
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {data.education.length > 0 && (

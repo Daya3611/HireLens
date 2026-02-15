@@ -228,8 +228,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
     ) => {
         const newProjects = [...(resumeData.projects || [])];
         if (field === "technologies") {
-
-            const techs = value.split(",").map(t => t.trim()).filter(Boolean);
+            const techs = value.split(",");
             newProjects[index] = { ...newProjects[index], technologies: techs };
         } else {
             newProjects[index] = { ...newProjects[index], [field]: value };
@@ -520,7 +519,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                                     </label>
                                     <input
                                         type="text"
-                                        value={(project.technologies || []).join(", ")}
+                                        value={(project.technologies || []).join(",")}
                                         onChange={(e) => updateProject(index, "technologies", e.target.value)}
                                         placeholder="React, generic-ui, TypeScript"
                                         className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-neutral-400"

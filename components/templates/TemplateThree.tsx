@@ -110,6 +110,42 @@ export default function TemplateThree({ data }: TemplateProps) {
                         </div>
                     </section>
                 )}
+                {/* Projects */}
+                {data.projects && data.projects.length > 0 && (
+                    <section>
+                        <h2 className="text-xl font-bold uppercase tracking-widest border-b border-neutral-200 mb-6 pb-1">
+                            Projects
+                        </h2>
+                        <div className="space-y-6 font-sans">
+                            {data.projects.map((project, index) => (
+                                <div key={index}>
+                                    <div className="flex justify-between items-baseline mb-1">
+                                        <h3 className="text-lg font-bold text-neutral-900">
+                                            {project.name}
+                                            {project.link && (
+                                                <a href={project.link} className="ml-2 text-sm text-neutral-500 hover:text-neutral-800" target="_blank" rel="noopener noreferrer">
+                                                    (View)
+                                                </a>
+                                            )}
+                                        </h3>
+                                    </div>
+                                    <p className="text-neutral-600 text-sm leading-relaxed whitespace-pre-line mb-2">
+                                        {project.description}
+                                    </p>
+                                    {project.technologies && project.technologies.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.technologies.map((tech, i) => (
+                                                <span key={i} className="text-xs text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded">
+                                                    {tech}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 {/* Education */}
                 {data.education.length > 0 && (
