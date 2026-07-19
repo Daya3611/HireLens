@@ -27,6 +27,13 @@ export async function generatePDF(elementId: string): Promise<boolean> {
       pixelRatio: 4, // Higher ratio = better quality but larger file
       backgroundColor: "#ffffff",
       cacheBust: true,
+      filter: (node: Node) => {
+        const el = node as HTMLElement;
+        if (el.classList && (el.classList.contains("print:hidden") || el.classList.contains("pdf-exclude"))) {
+          return false;
+        }
+        return true;
+      }
     });
 
     const pdf = new jsPDF({
