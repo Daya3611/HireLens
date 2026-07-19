@@ -3,6 +3,8 @@
 import { ResumeData } from "@/types/resume";
 import ResumeParser from "@/components/ResumeParser";
 import ResumeForm from "@/components/ResumeForm";
+import CustomizerPanel from "./CustomizerPanel";
+import { TEMPLATES } from "../templates/TemplateRegistry";
 import { motion } from "framer-motion";
 import {
     Palette,
@@ -24,58 +26,6 @@ interface EditorSectionProps {
     onDownload: () => void;
     isDownloading: boolean;
 }
-
-const templates = [
-    {
-        id: "one",
-        name: "Modern",
-        description: "Clean & Minimal",
-        color: "from-blue-500 to-indigo-600",
-        features: ["Two-column layout", "Skills highlight", "Modern typography"],
-    },
-    {
-        id: "two",
-        name: "Professional",
-        description: "Classic & Elegant",
-        color: "from-neutral-700 to-neutral-900",
-        features: ["Traditional format", "ATS optimized", "Executive style"],
-    },
-    {
-        id: "three",
-        name: "Minimalist",
-        description: "Simple & Clean",
-        color: "from-stone-500 to-stone-700",
-        features: ["Serif typography", "Centered layout", "Whitespace focus"],
-    },
-    {
-        id: "four",
-        name: "Creative",
-        description: "Bold & Visual",
-        color: "from-purple-500 to-violet-600",
-        features: ["Dark sidebar", "Unique header", "Standout design"],
-    },
-    {
-        id: "five",
-        name: "Tech",
-        description: "Developer Ready",
-        color: "from-blue-600 to-cyan-500",
-        features: ["Code-inspired", "Skill-focused", "Dense layout"],
-    },
-    {
-        id: "six",
-        name: "Executive",
-        description: "C-Level Format",
-        color: "from-emerald-700 to-emerald-900",
-        features: ["Highly structured", "Traditional feel", "Formal tone"],
-    },
-    {
-        id: "seven",
-        name: "Modern Grid",
-        description: "Grid Layout",
-        color: "from-rose-500 to-pink-600",
-        features: ["Grid structure", "Distinct sections", "Vibrant accents"],
-    },
-];
 
 export default function EditorSection({
     resumeData,
@@ -120,7 +70,7 @@ export default function EditorSection({
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    {templates.map((template) => (
+                    {TEMPLATES.map((template) => (
                         <button
                             key={template.id}
                             onClick={() => setSelectedTemplate(template.id)}
@@ -135,7 +85,7 @@ export default function EditorSection({
                                 </div>
                             )}
 
-                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${template.color} mb-3 shadow-lg`} />
+                            <div className={`w-12 h-12 rounded-xl ${template.color} mb-3 shadow-lg`} />
                             <div className="font-semibold text-neutral-900 text-sm">
                                 {template.name}
                             </div>
@@ -161,12 +111,12 @@ export default function EditorSection({
                             <h3 className="font-bold text-neutral-900">Template Settings</h3>
                         </div>
                         <p className="text-sm text-neutral-600 mb-4">
-                            You're using the <span className="font-semibold text-indigo-600">{templates.find(t => t.id === selectedTemplate)?.name}</span> template.
+                            You're using the <span className="font-semibold text-indigo-600">{TEMPLATES.find(t => t.id === selectedTemplate)?.name}</span> template.
                             Switch templates anytime without losing your data.
                         </p>
 
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                            {templates.map((template) => (
+                            {TEMPLATES.map((template) => (
                                 <button
                                     key={template.id}
                                     onClick={() => setSelectedTemplate(template.id)}
@@ -175,7 +125,7 @@ export default function EditorSection({
                                         : "border-transparent bg-white/60 hover:bg-white hover:shadow-sm"
                                         }`}
                                 >
-                                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${template.color} shadow-sm`} />
+                                    <div className={`w-10 h-10 rounded-lg ${template.color} shadow-sm`} />
                                     <div className="text-left">
                                         <div className="font-semibold text-neutral-900 text-sm">
                                             {template.name}
@@ -196,7 +146,7 @@ export default function EditorSection({
                 {/* Features */}
                 <div className="mt-6 pt-6 border-t border-indigo-100">
                     <div className="flex flex-wrap gap-2">
-                        {templates
+                        {TEMPLATES
                             .find((t) => t.id === selectedTemplate)
                             ?.features.map((feature, idx) => (
                                 <span
@@ -211,34 +161,34 @@ export default function EditorSection({
                 </div>
             </motion.div>
 
-            {/* Import Resume */}
+            {/* Design & Layout settings */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.15 }}
                 className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden"
             >
-                {/* <div className="p-6">
+                <div className="p-6">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
-                            <FileUp className="w-5 h-5 text-green-600" />
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
+                            <Palette className="w-5 h-5 text-purple-600" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-neutral-900">Import Existing Resume</h3>
+                            <h3 className="font-bold text-neutral-900">Design & Layout Settings</h3>
                             <p className="text-sm text-neutral-500">
-                                Upload a PDF or DOCX to auto-fill your information
+                                Customize fonts, colors, and section layouts
                             </p>
                         </div>
                     </div>
-                    <ResumeParser onDataParsed={setResumeData} />
-                </div> */}
+                    <CustomizerPanel resumeData={resumeData} setResumeData={setResumeData} />
+                </div>
             </motion.div>
 
             {/* Resume Form */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}
                 className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden"
             >
                 <div className="p-6">
@@ -256,6 +206,7 @@ export default function EditorSection({
                     <ResumeForm resumeData={resumeData} setResumeData={setResumeData} />
                 </div>
             </motion.div>
+
 
             {/* Quick Tips */}
             <motion.div

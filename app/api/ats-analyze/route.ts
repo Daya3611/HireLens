@@ -1,82 +1,88 @@
-import { NextResponse } from "next/server";
-import mammoth from "mammoth";
-import { geminiModel } from "@/lib/gemini";
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { PDFParse } from "pdf-parse";
 
-export async function POST(req: Request) {
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/* ---------- Gemini setup ---------- */
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File;
-    const jobDescription = formData.get("jobDescription") as string;
+    const file = formData.get("file") as File | null;
+    const jobDescription = formData.get("jobDescription") as string | null;
 
     if (!file || !jobDescription) {
       return NextResponse.json(
-        { error: "Missing file or job description" },
+        { error: "Resume file and job description are required" },
         { status: 400 }
       );
     }
 
+    if (!file.type.includes("pdf")) {
+      return NextResponse.json(
+        { error: "Only PDF resumes are supported" },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- Extract PDF text ---------- */
     const buffer = Buffer.from(await file.arrayBuffer());
-    let resumeText = "";
+    const parser = new PDFParse({ data: buffer });
+    const pdfData = await parser.getText();
+    const extractedText = pdfData.text;
 
-    // Extract text
-    if (file.type === "application/pdf") {
-      console.log("Parsing PDF file...");
-      const pdf = require("pdf-parse/lib/pdf-parse.js");
-      const data = await pdf(buffer);
-      resumeText = data.text;
-      console.log("PDF parsed successfully. Text length:", resumeText.length);
-    } else {
-      console.log("Parsing DOCX file...");
-      const result = await mammoth.extractRawText({ buffer });
-      resumeText = result.value;
-      console.log("DOCX parsed successfully. Text length:", resumeText.length);
+    if (!extractedText || extractedText.length < 300) {
+      return NextResponse.json(
+        {
+          error:
+            "Resume appears to be scanned or empty. Please upload a text-based PDF.",
+        },
+        { status: 400 }
+      );
     }
 
-    if (!resumeText.trim()) {
-        console.error("No text extracted from resume");
-        return NextResponse.json(
-            { error: "Could not extract text from the resume." },
-            { status: 400 }
-        );
-    }
-
+    /* ---------- Gemini Prompt (from your Streamlit code) ---------- */
     const prompt = `
-You are an ATS analyzer.
+You are an advanced and highly experienced Applicant Tracking System (ATS).
 
-Return only JSON:
+Evaluate the resume against the job description.
 
-{
-  "score": number, // 0-100
-  "keywordMatchPercentage": number, // 0-100
-  "missingKeywords": ["string"],
-  "strengths": ["string"],
-  "improvements": ["string"],
-  "formattingIssues": ["string"]
-}
+Responsibilities:
+1. Identify missing keywords
+2. Give ATS match score (1–100)
+3. Provide improvement feedback
+4. Suggest skills, keywords, and achievements
+5. Give an application success rate (1–100)
 
 Resume:
-${resumeText.slice(0, 10000)}
+${extractedText}
 
 Job Description:
-${jobDescription.slice(0, 5000)}
+${jobDescription}
+
+Respond ONLY in the following format:
+
+• Job Description Match:
+• Missing Keywords:
+• Profile Summary:
+• Personalized suggestions for skills, keywords and achievements:
+• Application Success Rate:
 `;
 
-    const result = await geminiModel.generateContent(prompt);
-    const text = result.response.text();
-    console.log("Gemini response:", text);
+    const result = await model.generateContent(prompt);
 
-    const cleaned = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    const parsed = JSON.parse(cleaned);
-
-    return NextResponse.json(parsed);
-  } catch (error) {
-    console.error("ATS Analysis Error:", error);
+    return NextResponse.json({
+      analysis: result.response.text(),
+      extractedVia: "pdf-parse + gemini-pro",
+    });
+  } catch (err: any) {
+    console.error("ATS API Error:", err);
     return NextResponse.json(
-      { error: "Analysis failed. Please check the server logs." },
+      { error: "ATS analysis failed", message: err.message },
       { status: 500 }
     );
   }

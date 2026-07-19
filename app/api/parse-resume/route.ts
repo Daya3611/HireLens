@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { geminiModel } from "@/lib/gemini";
 // @ts-ignore
-import pdf from "pdf-parse/lib/pdf-parse";
+import { PDFParse } from "pdf-parse";
 import mammoth from "mammoth";
 
 export async function POST(req: Request) {
@@ -17,7 +17,8 @@ export async function POST(req: Request) {
     let text = "";
 
     if (file.type === "application/pdf") {
-      const data = await pdf(buffer);
+      const parser = new PDFParse({ data: buffer });
+      const data = await parser.getText();
       text = data.text;
     } else if (
       file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

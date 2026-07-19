@@ -31,6 +31,29 @@ export interface Language {
   level: string;
 }
 
+export interface Award {
+  name: string;
+  issuer: string;
+  year: string;
+  description?: string;
+}
+
+export interface Reference {
+  name: string;
+  title: string;
+  company: string;
+  contact: string;
+}
+
+export interface ResumeCustomization {
+  themeColor: string;
+  fontFamily: string;
+  fontSize: "sm" | "base" | "lg";
+  lineSpacing: "snug" | "normal" | "relaxed";
+  sectionOrder: string[];
+  hiddenSections: string[];
+}
+
 export interface ResumeData {
   name?: string;
   title?: string;
@@ -41,12 +64,17 @@ export interface ResumeData {
   linkedin?: string;
   github?: string;
   summary?: string;
+  profilePhoto?: string;
   skills: string[];
   experience: Experience[];
   education: Education[];
   projects?: Project[];
   certifications?: Certification[];
   languages?: Language[];
+  awards?: Award[];
+  interests?: string[];
+  references?: Reference[];
+  customization?: ResumeCustomization;
 }
 
 export interface ATSAnalysis {

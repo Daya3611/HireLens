@@ -12,15 +12,9 @@ interface HeaderProps {
     lastSaved?: Date;
 }
 
-const templates = [
-    { id: "one", name: "Modern", color: "bg-blue-500" },
-    { id: "two", name: "Professional", color: "bg-neutral-700" },
-    { id: "three", name: "Minimalist", color: "bg-stone-500" },
-    { id: "four", name: "Creative", color: "bg-purple-500" },
-    { id: "five", name: "Tech", color: "bg-cyan-500" },
-    { id: "six", name: "Executive", color: "bg-emerald-700" },
-    { id: "seven", name: "Modern Grid", color: "bg-rose-500" },
-];
+import { TEMPLATES } from "../templates/TemplateRegistry";
+
+const templates = TEMPLATES;
 
 export default function Header({
     selectedTemplate,

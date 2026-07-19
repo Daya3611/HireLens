@@ -2,8 +2,121 @@
 
 @theme {
   --font-sans: var(--font-inter);
+  --font-roboto: var(--font-roboto);
+  --font-outfit: var(--font-outfit);
+  --font-serif: var(--font-merriweather);
+  --font-lora: var(--font-lora);
+  --font-mono: var(--font-mono);
 }
 
 body {
   font-family: var(--font-inter), sans-serif;
 }
+
+@media print {
+  /* Reset print defaults */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide all dashboard/UI elements during print */
+  header,
+  nav,
+  footer,
+  aside,
+  button,
+  .fixed,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset main layouts to render only the preview */
+  main {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  main > div {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Left column editor should be hidden */
+  main > div > div:first-child {
+    display: none !important;
+  }
+
+  /* Right column preview should expand to full size */
+  main > div > div:last-child {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Force resume preview to exact print bounds */
+  #resume-preview {
+    width: 210mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  /* Prevent headings or item paragraphs from splitting across pages */
+  .break-inside-avoid,
+  .resume-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+
+  section {
+    break-inside: avoid !important;
+  }
+
+  h2, h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  ul, li {
+    break-inside: avoid !important;
+  }
+}
+
+/* Global definitions for screen alignment / engine selector targets */
+.resume-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+}
+
+section {
+  break-inside: avoid;
+}
+
+h2, h3 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+ul, li {
+  break-inside: avoid;
+}
+
