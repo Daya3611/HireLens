@@ -34,6 +34,16 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
     const [pageCount, setPageCount] = useState(1);
     const [pageHeight, setPageHeight] = useState(1122); // A4 ratio px height
 
+    const [pageSpacers, setPageSpacers] = useState<Record<number, number>>({});
+
+    const adjustPageSpacer = (pageIdx: number, amount: number) => {
+        setPageSpacers((prev) => {
+            const current = prev[pageIdx] || 0;
+            const nextVal = Math.max(0, current + amount);
+            return { ...prev, [pageIdx]: nextVal };
+        });
+    };
+
     useEffect(() => {
         const updateLayoutAndPageCount = () => {
             const element = containerRef.current;
@@ -55,24 +65,48 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
                 el.style.marginTop = "";
             });
 
-            // 2. Perform page-break avoidance
-            const containerRect = element.getBoundingClientRect();
+            // Helper function to get top position of element relative to container (unscaled, transform-independent)
+            function getElementTop(el: HTMLElement) {
+                let top = 0;
+                let curr: HTMLElement | null = el;
+                while (curr && curr !== element) {
+                    top += curr.offsetTop;
+                    curr = curr.offsetParent as HTMLElement | null;
+                }
+                return top;
+            }
+
+            // Keep track of pages that have already had their first-element spacer applied in this pass
+            const appliedSpacersForPages = new Set<number>();
 
             // Helper function to check and adjust an element
             function adjustElement(el: HTMLElement) {
-                const rect = el.getBoundingClientRect();
-                const top = (rect.top - containerRect.top) / scale;
-                const height = rect.height / scale;
+                const top = getElementTop(el);
+                const height = el.offsetHeight;
                 const bottom = top + height;
 
                 const pageIndex = Math.floor(top / H);
                 const boundary = (pageIndex + 1) * H;
 
+                let enginePush = 0;
                 if (bottom > boundary && height < H) {
-                    const pushAmount = boundary - top;
-                    if (pushAmount > 0) {
-                        el.style.marginTop = `${pushAmount}px`;
+                    enginePush = boundary - top;
+                }
+
+                // Determine the page index this element ends up on after the engine push
+                const finalTop = top + enginePush;
+                const finalPage = Math.floor(finalTop / H);
+
+                // If it sits on Page 2 (index >= 1) or later and we haven't applied the custom page spacer yet
+                if (finalPage > 0 && !appliedSpacersForPages.has(finalPage)) {
+                    appliedSpacersForPages.add(finalPage);
+                    const userSpacer = pageSpacers[finalPage] || 0;
+                    const totalPush = enginePush + userSpacer;
+                    if (totalPush > 0) {
+                        el.style.marginTop = `${totalPush}px`;
                     }
+                } else if (enginePush > 0) {
+                    el.style.marginTop = `${enginePush}px`;
                 }
             }
 
@@ -97,25 +131,36 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
                     const firstItem = leafItems[0];
                     
                     if (heading) {
-                        const headingRect = heading.getBoundingClientRect();
-                        const firstItemRect = firstItem.getBoundingClientRect();
-                        
-                        const headingTop = (headingRect.top - containerRect.top) / scale;
-                        const firstItemBottom = (firstItemRect.bottom - containerRect.top) / scale;
+                        const headingTop = getElementTop(heading);
+                        const firstItemTop = getElementTop(firstItem);
+                        const firstItemHeight = firstItem.offsetHeight;
+                        const firstItemBottom = firstItemTop + firstItemHeight;
 
                         const headingPage = Math.floor(headingTop / H);
                         const boundary = (headingPage + 1) * H;
 
-                        const firstItemTop = (firstItemRect.top - containerRect.top) / scale;
                         const firstItemPage = Math.floor(firstItemTop / H);
 
-                        // If the first item's bottom crosses the page boundary, OR if it already sits on the next page
-                        // relative to the heading (meaning they are split)
+                        let enginePush = 0;
                         if (firstItemBottom > boundary || firstItemPage > headingPage) {
-                            const pushAmount = boundary - headingTop;
+                            enginePush = boundary - headingTop;
+                        }
+
+                        // Determine the page index the heading ends up on after the push
+                        const finalHeadingTop = headingTop + enginePush;
+                        const finalHeadingPage = Math.floor(finalHeadingTop / H);
+
+                        if (finalHeadingPage > 0 && !appliedSpacersForPages.has(finalHeadingPage)) {
+                            appliedSpacersForPages.add(finalHeadingPage);
+                            const userSpacer = pageSpacers[finalHeadingPage] || 0;
+                            const totalPush = enginePush + userSpacer;
+                            if (totalPush > 0) {
+                                heading.style.marginTop = `${totalPush}px`;
+                            }
+                        } else if (enginePush > 0) {
                             const totalHeaderAndItemHeight = firstItemBottom - headingTop;
-                            if (pushAmount > 0 && totalHeaderAndItemHeight < H) {
-                                heading.style.marginTop = `${pushAmount}px`;
+                            if (totalHeaderAndItemHeight < H) {
+                                heading.style.marginTop = `${enginePush}px`;
                             }
                         }
                     }
@@ -145,7 +190,7 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
         return () => {
             window.removeEventListener("resize", updateLayoutAndPageCount);
         };
-    }, [data, template, scale]);
+    }, [data, template, scale, pageSpacers]);
 
     // Calculate optimal scale based on screen size
     useEffect(() => {
@@ -319,11 +364,28 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
                             {Array.from({ length: pageCount - 1 }).map((_, idx) => (
                                 <div
                                     key={idx}
-                                    className="absolute left-0 right-0 border-t-2 border-dashed border-red-400 pointer-events-none z-30 opacity-70 print:hidden"
+                                    className="absolute left-0 right-0 border-t-2 border-dashed border-red-400 z-30 opacity-80 print:hidden"
                                     style={{ top: `${(idx + 1) * pageHeight}px` }}
                                 >
-                                    <span className="absolute right-4 -top-2.5 bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-xs">
-                                        PAGE {idx + 1} BREAK
+                                    <span className="absolute right-4 -top-3.5 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[9px] font-bold shadow-xs flex items-center gap-1.5 select-none pointer-events-auto">
+                                        <span>PAGE {idx + 1} BREAK</span>
+                                        <button
+                                            onClick={() => adjustPageSpacer(idx + 1, -10)}
+                                            className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                                            title="Reduce space"
+                                        >
+                                            -
+                                        </button>
+                                        <span className="min-w-[24px] text-center text-red-900 font-extrabold text-[9px]">
+                                            {pageSpacers[idx + 1] || 0}px
+                                        </span>
+                                        <button
+                                            onClick={() => adjustPageSpacer(idx + 1, 10)}
+                                            className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                                            title="Increase space"
+                                        >
+                                            +
+                                        </button>
                                     </span>
                                 </div>
                             ))}
