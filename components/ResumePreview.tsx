@@ -245,157 +245,112 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
     const TemplateComponent = getTemplateComponent(template);
 
     return (
-        <div className={`flex flex-col h-full bg-neutral-100 ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-            {/* Top Toolbar */}
+        <div className={`relative flex flex-col h-full w-full bg-slate-100/80 overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50 bg-neutral-900' : ''}`}>
+            
+            {/* Floating Glassmorphic Dock */}
             <motion.div
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-white border-b border-neutral-200 shadow-sm"
+                className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md border border-neutral-200/80 shadow-xl rounded-full select-none"
             >
-                <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg text-white`}>
-                        <FileText className="w-5 h-5" />
-                    </div>
-                    <div>
-                        <h3 className="font-bold text-neutral-900">Resume Preview</h3>
-                        <p className="text-sm text-neutral-500">
-                            {TEMPLATES.find((t) => t.id === template)?.name || "Classic"} Template • A4 Size
-                        </p>
-                    </div>
+                <div className="flex items-center gap-1 bg-neutral-100/80 rounded-full p-0.5">
+                    <button
+                        onClick={handleZoomOut}
+                        className="p-1.5 hover:bg-white hover:shadow-xs rounded-full transition-all text-neutral-600 cursor-pointer"
+                        title="Zoom Out"
+                    >
+                        <ZoomOut className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-xs font-semibold text-neutral-700 w-10 text-center select-none">
+                        {Math.round(scale * 100)}%
+                    </span>
+                    <button
+                        onClick={handleZoomIn}
+                        className="p-1.5 hover:bg-white hover:shadow-xs rounded-full transition-all text-neutral-600 cursor-pointer"
+                        title="Zoom In"
+                    >
+                        <ZoomIn className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                        onClick={handleResetZoom}
+                        className="p-1.5 hover:bg-white hover:shadow-xs rounded-full transition-all text-neutral-600 cursor-pointer"
+                        title="Reset Zoom"
+                    >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                    </button>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1 bg-neutral-100 rounded-lg p-1">
-                        <button
-                            onClick={handleZoomOut}
-                            className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all cursor-pointer"
-                            title="Zoom Out"
-                        >
-                            <ZoomOut className="w-4 h-4 text-neutral-600" />
-                        </button>
-                        <span className="text-sm font-medium text-neutral-600 w-12 text-center select-none">
-                            {Math.round(scale * 100)}%
-                        </span>
-                        <button
-                            onClick={handleZoomIn}
-                            className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all cursor-pointer"
-                            title="Zoom In"
-                        >
-                            <ZoomIn className="w-4 h-4 text-neutral-600" />
-                        </button>
-                        <button
-                            onClick={handleResetZoom}
-                            className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all cursor-pointer"
-                            title="Reset Zoom"
-                        >
-                            <RotateCcw className="w-4 h-4 text-neutral-600" />
-                        </button>
-                    </div>
+                <div className="w-px h-4 bg-neutral-200" />
 
-                    <div className="w-px h-8 bg-neutral-200 mx-2" />
+                <button
+                    onClick={() => setIsFullscreen(!isFullscreen)}
+                    className="p-1.5 text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 rounded-full transition-colors cursor-pointer flex items-center gap-1 text-xs font-medium px-2"
+                    title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
+                >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">{isFullscreen ? "Exit" : "Expand"}</span>
+                </button>
 
-                    <button
-                        onClick={handlePrint}
-                        className="hidden sm:flex items-center gap-2 px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
-                    >
-                        <Printer className="w-4 h-4" />
-                        <span className="text-sm font-medium">Print</span>
-                    </button>
+                <div className="w-px h-4 bg-neutral-200" />
 
-                    <button
-                        onClick={() => setIsFullscreen(!isFullscreen)}
-                        className="hidden sm:flex items-center gap-2 px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors cursor-pointer"
-                    >
-                        <Maximize2 className="w-4 h-4" />
-                        <span className="text-sm font-medium">
-                            {isFullscreen ? "Exit" : "Fullscreen"}
-                        </span>
-                    </button>
-
-                    <button
-                        onClick={handleDownload}
-                        disabled={isGenerating}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-all hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
-                    >
-                        {isGenerating ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                <span className="hidden sm:inline">Generating...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Download className="w-4 h-4" />
-                                <span className="hidden sm:inline">Download PDF</span>
-                            </>
-                        )}
-                    </button>
+                <div className="text-xs font-bold text-indigo-600 px-2.5 py-0.5 bg-indigo-50 rounded-full">
+                    Page 1 of {pageCount}
                 </div>
             </motion.div>
 
-            {/* Resume Sheet Container */}
-            <div className="flex-1 overflow-auto p-4 sm:p-8 bg-neutral-100 relative">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `linear-gradient(to right, #404040 1px, transparent 1px), linear-gradient(to bottom, #404040 1px, transparent 1px)`,
-                        backgroundSize: '20px 20px'
-                    }} />
-                </div>
+            {/* Resume Sheet Viewport (Single Clean Scroll Container) */}
+            <div className="flex-1 overflow-y-auto pt-16 pb-20 px-4 sm:px-8 relative scroll-smooth flex justify-center items-start">
+                <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
 
-                <div className="flex justify-center items-start min-h-full">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: scale }}
-                        transition={{ duration: 0.3 }}
-                        className="origin-top shadow-2xl"
-                        style={{ transformOrigin: "top center" }}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: scale }}
+                    transition={{ duration: 0.2 }}
+                    className="origin-top my-4"
+                    style={{ transformOrigin: "top center" }}
+                >
+                    <div
+                        id="resume-preview"
+                        ref={containerRef}
+                        className="w-[210mm] bg-white mx-auto overflow-hidden relative shadow-[0_20px_60px_-15px_rgba(0,0,0,0.14)] rounded-xs border border-neutral-200/70"
+                        style={{ 
+                            minHeight: `${pageCount * pageHeight}px`,
+                        }}
                     >
-                        <div
-                            id="resume-preview"
-                            ref={containerRef}
-                            className="w-[210mm] bg-white mx-auto overflow-hidden relative"
-                            style={{ 
-                                minHeight: `${pageCount * pageHeight}px`,
-                            }}
-                        >
-                            {/* Template Content */}
-                            <TemplateComponent data={data} />
+                        {/* Template Content */}
+                        <TemplateComponent data={data} />
 
-                            {/* Page Break Dotted Indicators */}
-                            {Array.from({ length: pageCount - 1 }).map((_, idx) => (
-                                <div
-                                    key={idx}
-                                    className="absolute left-0 right-0 border-t-2 border-dashed border-red-400 z-30 opacity-80 print:hidden"
-                                    style={{ top: `${(idx + 1) * pageHeight}px` }}
-                                >
-                                    <span className="absolute right-4 -top-3.5 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[9px] font-bold shadow-xs flex items-center gap-1.5 select-none pointer-events-auto">
-                                        <span>PAGE {idx + 1} BREAK</span>
-                                        <button
-                                            onClick={() => adjustPageSpacer(idx + 1, -10)}
-                                            className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
-                                            title="Reduce space"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="min-w-[24px] text-center text-red-900 font-extrabold text-[9px]">
-                                            {pageSpacers[idx + 1] || 0}px
-                                        </span>
-                                        <button
-                                            onClick={() => adjustPageSpacer(idx + 1, 10)}
-                                            className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
-                                            title="Increase space"
-                                        >
-                                            +
-                                        </button>
+                        {/* Page Break Dotted Indicators */}
+                        {Array.from({ length: pageCount - 1 }).map((_, idx) => (
+                            <div
+                                key={idx}
+                                className="absolute left-0 right-0 border-t-2 border-dashed border-red-400 z-30 opacity-80 print:hidden"
+                                style={{ top: `${(idx + 1) * pageHeight}px` }}
+                            >
+                                <span className="absolute right-4 -top-3.5 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[9px] font-bold shadow-xs flex items-center gap-1.5 select-none pointer-events-auto">
+                                    <span>PAGE {idx + 1} BREAK</span>
+                                    <button
+                                        onClick={() => adjustPageSpacer(idx + 1, -10)}
+                                        className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                                        title="Reduce space"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="min-w-[24px] text-center text-red-900 font-extrabold text-[9px]">
+                                        {pageSpacers[idx + 1] || 0}px
                                     </span>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-                </div>
-
-                <div className="fixed bottom-6 right-6 bg-white rounded-full shadow-lg px-4 py-2 text-sm font-semibold text-neutral-600 border border-neutral-200 z-40 select-none">
-                    Page 1 of {pageCount}
-                </div>
+                                    <button
+                                        onClick={() => adjustPageSpacer(idx + 1, 10)}
+                                        className="w-4 h-4 bg-red-200 hover:bg-red-300 text-red-800 rounded flex items-center justify-center font-bold text-[10px] cursor-pointer"
+                                        title="Increase space"
+                                    >
+                                        +
+                                    </button>
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
 
             <AnimatePresence>

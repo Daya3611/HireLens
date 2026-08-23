@@ -1,12 +1,12 @@
 "use client";
 
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 
 /**
  * Generates a PDF from a DOM element using html-to-image.
- * This method is robust against modern CSS features like lab()/oklch() colors
- * because it relies on the browser's native rendering engine via SVG foreignObject.
+ * Uses JPEG compression and pixelRatio 2 to ensure crystal-clear text quality
+ * while maintaining a compact PDF file size (< 1 MB).
  */
 export async function generatePDF(elementId: string): Promise<boolean> {
   try {
@@ -21,10 +21,10 @@ export async function generatePDF(elementId: string): Promise<boolean> {
       await document.fonts.ready;
     }
 
-    // High resolution for clear text
-    const dataUrl = await toPng(element, {
-      quality: 0.95,
-      pixelRatio: 4, // Higher ratio = better quality but larger file
+    // Capture DOM element with pixelRatio 2 (sharp text, small file size)
+    const dataUrl = await toJpeg(element, {
+      quality: 0.85,
+      pixelRatio: 2, // 2x ratio provides high DPI text (~200 DPI) while keeping file size very small (< 1 MB)
       backgroundColor: "#ffffff",
       cacheBust: true,
       filter: (node: Node) => {
@@ -40,39 +40,27 @@ export async function generatePDF(elementId: string): Promise<boolean> {
       orientation: "portrait",
       unit: "mm",
       format: "a4",
+      compress: true,
     });
 
     const imgProps = pdf.getImageProperties(dataUrl);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    // Handle single page PDF first - can expand for multi-page if needed
-    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-    
-    // If content exceeds one page, add pages
-    let heightLeft = pdfHeight;
-    let position = 0;
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // If long content
-    if (heightLeft > pageHeight) {
-        // Reset and do multi-page logic if needed, but for simple resume usually 1 page is target
-        // For robust multi-page:
-        // This is a naive implementation; better libraries like react-to-print handle paging better
-        // but for pure JS generation:
-        
-        // Re-add first page
-        // (Actually, the first addImage above handled page 1)
-        
-        heightLeft -= pageHeight;
-        position -= pageHeight;
-        
-        while (heightLeft > 0) {
-            pdf.addPage();
-            pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, pdfHeight);
-            heightLeft -= pageHeight;
-            position -= pageHeight;
-        }
+    let heightLeft = pdfHeight;
+    let position = 0;
+
+    // Add first page
+    pdf.addImage(dataUrl, "JPEG", 0, position, pdfWidth, pdfHeight, undefined, "FAST");
+    heightLeft -= pageHeight;
+
+    // Handle additional pages if content exceeds 1 page (using a 2mm tolerance to avoid accidental trailing blank pages)
+    while (heightLeft > 2) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(dataUrl, "JPEG", 0, position, pdfWidth, pdfHeight, undefined, "FAST");
+      heightLeft -= pageHeight;
     }
 
     pdf.save("resume.pdf");
@@ -83,3 +71,4 @@ export async function generatePDF(elementId: string): Promise<boolean> {
     return false;
   }
 }
+

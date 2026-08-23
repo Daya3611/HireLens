@@ -5,7 +5,7 @@ import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import Link from "next/link";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "@/components/layout/Navbar";
-import { Plus, FileText, Calendar, Edit, Trash2 } from "lucide-react";
+import { Plus, FileText, Calendar, Edit, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +14,8 @@ interface SavedResume {
     name: string;
     updatedAt: any;
     jobTitle?: string;
+    isOwner?: boolean;
+    ownerEmail?: string;
 }
 
 export default function Dashboard() {
@@ -27,16 +29,46 @@ export default function Dashboard() {
             setUser(currentUser);
             if (currentUser) {
                 try {
-                    const q = query(
+                    const resumeMap = new Map<string, SavedResume>();
+
+                    // 1. Fetch owned resumes
+                    const ownedQuery = query(
                         collection(db, "resumes"),
                         where("userId", "==", currentUser.uid)
                     );
-                    const querySnapshot = await getDocs(q);
-                    const fetchedResumes: SavedResume[] = [];
-                    querySnapshot.forEach((doc) => {
-                        fetchedResumes.push({ id: doc.id, ...doc.data() } as SavedResume);
+                    const ownedSnapshot = await getDocs(ownedQuery);
+                    ownedSnapshot.forEach((doc) => {
+                        resumeMap.set(doc.id, {
+                            id: doc.id,
+                            ...doc.data(),
+                            isOwner: true,
+                        } as SavedResume);
                     });
-                    // Client-side sort since Firestore compound query might value index
+
+                    // 2. Fetch resumes shared with current user's email
+                    if (currentUser.email) {
+                        try {
+                            const sharedQuery = query(
+                                collection(db, "resumes"),
+                                where("allowedEditors", "array-contains", currentUser.email.toLowerCase())
+                            );
+                            const sharedSnapshot = await getDocs(sharedQuery);
+                            sharedSnapshot.forEach((doc) => {
+                                if (!resumeMap.has(doc.id)) {
+                                    resumeMap.set(doc.id, {
+                                        id: doc.id,
+                                        ...doc.data(),
+                                        isOwner: false,
+                                    } as SavedResume);
+                                }
+                            });
+                        } catch (e) {
+                            console.error("Error fetching shared resumes:", e);
+                        }
+                    }
+
+                    const fetchedResumes = Array.from(resumeMap.values());
+                    // Client-side sort by last updated
                     fetchedResumes.sort((a, b) => {
                         const dateA = a.updatedAt?.seconds ? new Date(a.updatedAt.seconds * 1000) : new Date();
                         const dateB = b.updatedAt?.seconds ? new Date(b.updatedAt.seconds * 1000) : new Date();
@@ -82,7 +114,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">My Resumes</h1>
-                        <p className="text-gray-500 mt-1">Manage and edit your saved resumes</p>
+                        <p className="text-gray-500 mt-1">Manage, edit, and collaborate on your resumes</p>
                     </div>
                 </div>
 
@@ -114,9 +146,11 @@ export default function Dashboard() {
                                     <div className="p-3 bg-indigo-50 rounded-xl">
                                         <FileText className="w-6 h-6 text-indigo-600" />
                                     </div>
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-10">
-                                        {/* Add delete functionality later if needed */}
-                                    </div>
+                                    {!resume.isOwner && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 z-10">
+                                            <Users className="w-3 h-3" /> Shared
+                                        </span>
+                                    )}
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 line-clamp-1">{resume.name}</h3>
                                 <p className="text-gray-500 text-sm mt-1 line-clamp-2">{resume.jobTitle || "Untitled Position"}</p>
@@ -133,6 +167,7 @@ export default function Dashboard() {
                             </div>
                         </motion.div>
                     ))}
+
 
                     {resumes.length === 0 && (
                         <div className="hidden md:flex flex-col items-center justify-center text-gray-400 h-64 p-6 border border-transparent">

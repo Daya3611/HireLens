@@ -6,8 +6,25 @@ service cloud.firestore {
       // Allow users to create if they are authenticated and set their own userId
       allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
       
-      // Allow users to read, update, and delete only their own resumes
-      allow read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      // Allow read if user is owner, resume is public edit, or user's email/uid is in allowedEditors
+      allow read: if resource.data.isPublicEdit == true || 
+                  (request.auth != null && (
+                    resource.data.userId == request.auth.uid || 
+                    (resource.data.allowedEditors != null && request.auth.token.email in resource.data.allowedEditors) ||
+                    (resource.data.allowedEditors != null && request.auth.uid in resource.data.allowedEditors)
+                  ));
+
+      // Allow update if user is owner, resume is public edit, or user's email/uid is in allowedEditors
+      allow update: if resource.data.isPublicEdit == true || 
+                    (request.auth != null && (
+                      resource.data.userId == request.auth.uid || 
+                      (resource.data.allowedEditors != null && request.auth.token.email in resource.data.allowedEditors) ||
+                      (resource.data.allowedEditors != null && request.auth.uid in resource.data.allowedEditors)
+                    ));
+
+      // Allow delete only for the resume owner
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
   }
 }
+
