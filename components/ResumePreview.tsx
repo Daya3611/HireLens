@@ -312,13 +312,14 @@ export default function ResumePreview({ data, template }: ResumePreviewProps) {
                     <div
                         id="resume-preview"
                         ref={containerRef}
-                        className="w-[210mm] bg-white mx-auto overflow-hidden relative shadow-[0_20px_60px_-15px_rgba(0,0,0,0.14)] rounded-xs border border-neutral-200/70"
+                        className="w-[210mm] bg-white mx-auto overflow-hidden relative shadow-[0_20px_60px_-15px_rgba(0,0,0,0.14)] rounded-xs border border-neutral-200/70 flex flex-col"
                         style={{ 
                             minHeight: `${pageCount * pageHeight}px`,
                         }}
                     >
                         {/* Template Content */}
                         <TemplateComponent data={data} />
+
 
                         {/* Page Break Dotted Indicators */}
                         {Array.from({ length: pageCount - 1 }).map((_, idx) => (

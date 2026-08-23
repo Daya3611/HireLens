@@ -65,7 +65,7 @@ export default function Navbar() {
 
     const navLinks = [
         { name: "Builder", href: "/dashboard", icon: LayoutDashboard, requiresAuth: true },
-        { name: "ATS Scanner", href: "/ats-scanner", icon: Scan, requiresAuth: false },
+        { name: "ATS Scanner", href: "/ats-scanner", icon: Scan, requiresAuth: false, isUnderDev: true },
     ];
 
     const isActive = (href: string) => pathname === href;
@@ -120,11 +120,17 @@ export default function Navbar() {
                                             />
                                         )}
                                         <Icon className={`w-4 h-4 ${active ? "text-blue-600" : "text-neutral-400"}`} />
-                                        {link.name}
+                                        <span>{link.name}</span>
+                                        {link.isUnderDev && (
+                                            <span className="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider bg-amber-100 text-amber-700 border border-amber-200/80 rounded-full">
+                                                Under Dev
+                                            </span>
+                                        )}
                                     </Link>
                                 );
                             })}
                         </div>
+
 
                         {/* Right Side Actions */}
                         <div className="flex items-center gap-3">

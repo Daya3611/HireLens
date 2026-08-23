@@ -14,6 +14,7 @@ import { db, auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { Lock, AlertCircle, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import LoadingScreen from "@/components/ui/LoadingScreen";
 
 import { Suspense } from "react";
 
@@ -185,7 +186,8 @@ function BuilderContent() {
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    if (loading) return <LoadingScreen message="Loading resume builder..." />;
+
 
     if (unauthorized) {
         return (
