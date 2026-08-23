@@ -168,8 +168,8 @@ export default function CustomizerPanel({ resumeData, setResumeData }: Customize
         </div>
       </div>
 
-      {/* 2. Fonts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* 2. Fonts & Size */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="block text-sm font-bold text-neutral-800">
             Typography
@@ -177,7 +177,7 @@ export default function CustomizerPanel({ resumeData, setResumeData }: Customize
           <select
             value={customization.fontFamily || "sans"}
             onChange={(e) => updateCustomization({ fontFamily: e.target.value })}
-            className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm text-neutral-800 font-medium"
+            className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm text-neutral-800 font-medium"
           >
             {fontPresets.map((preset) => (
               <option key={preset.id} value={preset.id}>
@@ -187,7 +187,7 @@ export default function CustomizerPanel({ resumeData, setResumeData }: Customize
           </select>
         </div>
 
-        {/* Font size & Spacing */}
+        {/* Font size */}
         <div className="space-y-1.5">
           <label className="block text-sm font-bold text-neutral-800">
             Font Size
@@ -210,7 +210,7 @@ export default function CustomizerPanel({ resumeData, setResumeData }: Customize
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label className="block text-sm font-bold text-neutral-800">
             Line Spacing
@@ -232,6 +232,7 @@ export default function CustomizerPanel({ resumeData, setResumeData }: Customize
           </div>
         </div>
       </div>
+
 
       {/* 3. Section Reorder & Visibility */}
       <div className="space-y-3">

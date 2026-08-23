@@ -1,21 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { ResumeData } from "@/types/resume";
-import ResumeParser from "@/components/ResumeParser";
 import ResumeForm from "@/components/ResumeForm";
 import CustomizerPanel from "./CustomizerPanel";
 import { TEMPLATES } from "../templates/TemplateRegistry";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
     Palette,
-    FileUp,
     Edit3,
-    ChevronRight,
     Sparkles,
     Layout,
     CheckCircle2,
     Download,
     Loader2,
+    FileText,
 } from "lucide-react";
 
 interface EditorSectionProps {
@@ -35,227 +34,210 @@ export default function EditorSection({
     onDownload,
     isDownloading,
 }: EditorSectionProps) {
+    const [activeEditorTab, setActiveEditorTab] = useState<"content" | "design" | "template">("content");
+
+    const currentTemplate = TEMPLATES.find((t) => t.id === selectedTemplate);
+
     return (
-        <div className="max-w-2xl mx-auto space-y-6 pb-20">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-            >
-                <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
-                            <Edit3 className="w-3.5 h-3.5" />
-                            Live Editor
-                        </span>
-                    </div>
-                    <h2 className="text-3xl font-bold text-neutral-900">Resume Editor</h2>
-                    <p className="text-neutral-500 mt-1">
-                        Update your information and watch your resume update in real-time.
-                    </p>
-                </div>
-            </motion.div>
+        <div className="w-full space-y-5 pb-16">
+            {/* Navigation Tabs Header */}
+            <div className="bg-neutral-100 p-1.5 rounded-2xl flex items-center gap-1 border border-neutral-200/80 sticky top-0 z-20 shadow-xs">
+                <button
+                    onClick={() => setActiveEditorTab("content")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        activeEditorTab === "content"
+                            ? "bg-white text-indigo-600 shadow-sm border border-neutral-200/60"
+                            : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50"
+                    }`}
+                >
+                    <Edit3 className="w-4 h-4 text-indigo-500" />
+                    <span>Content</span>
+                </button>
+                <button
+                    onClick={() => setActiveEditorTab("design")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        activeEditorTab === "design"
+                            ? "bg-white text-purple-600 shadow-sm border border-neutral-200/60"
+                            : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50"
+                    }`}
+                >
+                    <Palette className="w-4 h-4 text-purple-500" />
+                    <span>Design</span>
+                </button>
+                <button
+                    onClick={() => setActiveEditorTab("template")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                        activeEditorTab === "template"
+                            ? "bg-white text-blue-600 shadow-sm border border-neutral-200/60"
+                            : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-200/50"
+                    }`}
+                >
+                    <Layout className="w-4 h-4 text-blue-500" />
+                    <span>Templates</span>
+                </button>
+            </div>
 
-            {/* Template Selector - Mobile */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="lg:hidden bg-white rounded-3xl p-6 border border-neutral-200 shadow-sm"
-            >
-                <div className="flex items-center gap-2 mb-4">
-                    <Palette className="w-5 h-5 text-indigo-600" />
-                    <h3 className="font-bold text-neutral-900">Choose Template</h3>
-                </div>
+            {/* Tab Contents */}
+            <AnimatePresence mode="wait">
+                {/* 1. CONTENT TAB */}
+                {activeEditorTab === "content" && (
+                    <motion.div
+                        key="content"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                    >
+                        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <FileText className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-neutral-900 text-base">Resume Content</h3>
+                                    <p className="text-xs text-neutral-500">Fill in your personal, education, and career details</p>
+                                </div>
+                            </div>
+                            <ResumeForm resumeData={resumeData} setResumeData={setResumeData} />
+                        </div>
+                    </motion.div>
+                )}
 
-                <div className="grid grid-cols-2 gap-4">
-                    {TEMPLATES.map((template) => (
-                        <button
-                            key={template.id}
-                            onClick={() => setSelectedTemplate(template.id)}
-                            className={`relative p-4 rounded-2xl border-2 text-left transition-all duration-300 ${selectedTemplate === template.id
-                                ? "border-indigo-600 bg-indigo-50/50 shadow-md"
-                                : "border-neutral-200 bg-white hover:border-neutral-300"
-                                }`}
-                        >
-                            {selectedTemplate === template.id && (
-                                <div className="absolute top-3 right-3">
-                                    <CheckCircle2 className="w-5 h-5 text-indigo-600" />
+                {/* 2. DESIGN TAB */}
+                {activeEditorTab === "design" && (
+                    <motion.div
+                        key="design"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                    >
+                        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                                    <Palette className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-neutral-900 text-base">Design & Customization</h3>
+                                    <p className="text-xs text-neutral-500">Customize colors, fonts, spacing, and section layout</p>
+                                </div>
+                            </div>
+                            <CustomizerPanel resumeData={resumeData} setResumeData={setResumeData} />
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* 3. TEMPLATES TAB */}
+                {activeEditorTab === "template" && (
+                    <motion.div
+                        key="template"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="space-y-4"
+                    >
+                        <div className="bg-white rounded-2xl p-4 sm:p-5 border border-neutral-200/80 shadow-xs">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                    <Layout className="w-4 h-4" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-neutral-900 text-base">Choose Template</h3>
+                                    <p className="text-xs text-neutral-500">Switch templates anytime — data is automatically preserved</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                {TEMPLATES.map((template) => {
+                                    const isSelected = selectedTemplate === template.id;
+                                    return (
+                                        <button
+                                            key={template.id}
+                                            onClick={() => setSelectedTemplate(template.id)}
+                                            className={`relative p-4 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                                                isSelected
+                                                    ? "border-indigo-600 bg-indigo-50/40 shadow-sm ring-2 ring-indigo-500/20"
+                                                    : "border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-xs"
+                                            }`}
+                                        >
+                                            <div className="flex items-start justify-between mb-3">
+                                                <div className={`w-10 h-10 rounded-lg ${template.color} shadow-sm flex items-center justify-center text-white font-bold text-xs`}>
+                                                    CV
+                                                </div>
+                                                {isSelected && (
+                                                    <span className="bg-indigo-600 text-white rounded-full p-1 shadow-xs">
+                                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-neutral-900 text-sm">{template.name}</h4>
+                                                <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{template.description}</p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Template Features Pill Badges */}
+                            {currentTemplate && (
+                                <div className="mt-5 pt-4 border-t border-neutral-100">
+                                    <h4 className="text-xs font-bold text-neutral-700 uppercase tracking-wider mb-2">
+                                        Features of {currentTemplate.name}
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {currentTemplate.features.map((feature, idx) => (
+                                            <span
+                                                key={idx}
+                                                className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 rounded-full text-xs font-medium text-neutral-600 border border-neutral-200/60"
+                                            >
+                                                <Sparkles className="w-3 h-3 text-indigo-500" />
+                                                {feature}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                            <div className={`w-12 h-12 rounded-xl ${template.color} mb-3 shadow-lg`} />
-                            <div className="font-semibold text-neutral-900 text-sm">
-                                {template.name}
-                            </div>
-                            <div className="text-xs text-neutral-500 mt-0.5">
-                                {template.description}
-                            </div>
-                        </button>
-                    ))}
+            {/* Quick Tips Box */}
+            <div className="bg-amber-50/80 rounded-2xl p-4 border border-amber-100 flex items-start gap-3">
+                <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Sparkles className="w-3.5 h-3.5" />
                 </div>
-            </motion.div>
+                <div>
+                    <h4 className="font-bold text-neutral-900 text-xs uppercase tracking-wider mb-0.5">Pro Tip</h4>
+                    <p className="text-xs text-neutral-600 leading-relaxed">
+                        Quantify achievements with metrics (e.g. "Increased sales by 35% across 12 regions").
+                    </p>
+                </div>
+            </div>
 
-            {/* Template Info - Desktop */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="hidden lg:block bg-gradient-to-br from-indigo-50 to-blue-50 rounded-3xl p-6 border border-indigo-100"
+            {/* Mobile/Desktop Download PDF Button */}
+            <button
+                onClick={onDownload}
+                disabled={isDownloading}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl hover:shadow-lg transition-all font-semibold text-sm shadow-md shadow-indigo-500/20 disabled:opacity-50 cursor-pointer"
             >
-                <div className="flex items-start justify-between">
-                    <div>
-                        <div className="flex items-center gap-2 mb-3">
-                            <Layout className="w-5 h-5 text-indigo-600" />
-                            <h3 className="font-bold text-neutral-900">Template Settings</h3>
-                        </div>
-                        <p className="text-sm text-neutral-600 mb-4">
-                            You're using the <span className="font-semibold text-indigo-600">{TEMPLATES.find(t => t.id === selectedTemplate)?.name}</span> template.
-                            Switch templates anytime without losing your data.
-                        </p>
-
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                            {TEMPLATES.map((template) => (
-                                <button
-                                    key={template.id}
-                                    onClick={() => setSelectedTemplate(template.id)}
-                                    className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-300 ${selectedTemplate === template.id
-                                        ? "border-indigo-600 bg-white shadow-md"
-                                        : "border-transparent bg-white/60 hover:bg-white hover:shadow-sm"
-                                        }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-lg ${template.color} shadow-sm`} />
-                                    <div className="text-left">
-                                        <div className="font-semibold text-neutral-900 text-sm">
-                                            {template.name}
-                                        </div>
-                                        <div className="text-xs text-neutral-500">
-                                            {template.description}
-                                        </div>
-                                    </div>
-                                    {selectedTemplate === template.id && (
-                                        <CheckCircle2 className="w-5 h-5 text-indigo-600 ml-2" />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Features */}
-                <div className="mt-6 pt-6 border-t border-indigo-100">
-                    <div className="flex flex-wrap gap-2">
-                        {TEMPLATES
-                            .find((t) => t.id === selectedTemplate)
-                            ?.features.map((feature, idx) => (
-                                <span
-                                    key={idx}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-neutral-600 border border-indigo-100"
-                                >
-                                    <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-                                    {feature}
-                                </span>
-                            ))}
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Design & Layout settings */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden"
-            >
-                <div className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
-                            <Palette className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-neutral-900">Design & Layout Settings</h3>
-                            <p className="text-sm text-neutral-500">
-                                Customize fonts, colors, and section layouts
-                            </p>
-                        </div>
-                    </div>
-                    <CustomizerPanel resumeData={resumeData} setResumeData={setResumeData} />
-                </div>
-            </motion.div>
-
-            {/* Resume Form */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden"
-            >
-                <div className="p-6">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
-                            <Edit3 className="w-5 h-5 text-indigo-600" />
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-neutral-900">Personal Information</h3>
-                            <p className="text-sm text-neutral-500">
-                                Edit your details below
-                            </p>
-                        </div>
-                    </div>
-                    <ResumeForm resumeData={resumeData} setResumeData={setResumeData} />
-                </div>
-            </motion.div>
-
-
-            {/* Quick Tips */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100"
-            >
-                <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                        <h4 className="font-semibold text-neutral-900 text-sm mb-1">
-                            Pro Tip
-                        </h4>
-                        <p className="text-sm text-neutral-600 leading-relaxed">
-                            Use action verbs and quantify your achievements. Instead of "Managed team",
-                            try "Led a team of 5 developers to deliver project 2 weeks ahead of schedule".
-                        </p>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Download Button */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="flex justify-center pt-4"
-            >
-                <button
-                    onClick={onDownload}
-                    disabled={isDownloading}
-                    className="w-full sm:w-auto flex items-center justify-center gap-2 bg-black text-white px-8 py-3 rounded-xl hover:bg-gray-800 transition-colors font-medium text-base shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {isDownloading ? (
-                        <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            <span>Generating PDF...</span>
-                        </>
-                    ) : (
-                        <>
-                            <Download className="w-5 h-5" />
-                            <span>Download Resume PDF</span>
-                        </>
-                    )}
-                </button>
-            </motion.div>
+                {isDownloading ? (
+                    <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Generating High-Res PDF...</span>
+                    </>
+                ) : (
+                    <>
+                        <Download className="w-4 h-4" />
+                        <span>Download PDF Resume</span>
+                    </>
+                )}
+            </button>
         </div>
     );
-}
+}

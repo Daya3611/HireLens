@@ -94,13 +94,13 @@ const InputField = ({
     placeholder: string;
     icon?: React.ElementType;
 }) => (
-    <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-neutral-700">
+    <div className="space-y-1.5 min-w-0">
+        <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider">
             {label}
         </label>
         <div className="relative">
             {Icon && (
-                <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
+                <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
             )}
             <input
                 type={type}
@@ -108,7 +108,7 @@ const InputField = ({
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-neutral-400 ${Icon ? "pl-11" : ""
+                className={`w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium text-neutral-900 placeholder:text-neutral-400 ${Icon ? "pl-9" : ""
                     }`}
             />
         </div>
@@ -130,8 +130,8 @@ const TextAreaField = ({
     placeholder: string;
     rows?: number;
 }) => (
-    <div className="space-y-1.5">
-        <label className="block text-sm font-semibold text-neutral-700">
+    <div className="space-y-1.5 min-w-0">
+        <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider">
             {label}
         </label>
         <textarea
@@ -140,7 +140,7 @@ const TextAreaField = ({
             onChange={onChange}
             placeholder={placeholder}
             rows={rows}
-            className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-neutral-400 resize-none"
+            className="w-full px-3.5 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm font-medium text-neutral-900 placeholder:text-neutral-400 resize-none"
         />
     </div>
 );
@@ -198,14 +198,14 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
         field: keyof ResumeData["experience"][0],
         value: string
     ) => {
-        const newExperience = [...resumeData.experience];
-        newExperience[index] = { ...newExperience[index], [field]: value };
-        setResumeData((prev) => ({ ...prev, experience: newExperience }));
+        const newExp = [...resumeData.experience];
+        newExp[index] = { ...newExp[index], [field]: value };
+        setResumeData((prev) => ({ ...prev, experience: newExp }));
     };
 
     const removeExperience = (index: number) => {
-        const newExperience = resumeData.experience.filter((_, i) => i !== index);
-        setResumeData((prev) => ({ ...prev, experience: newExperience }));
+        const newExp = resumeData.experience.filter((_, i) => i !== index);
+        setResumeData((prev) => ({ ...prev, experience: newExp }));
     };
 
     const addEducation = () => {
@@ -213,7 +213,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
             ...prev,
             education: [
                 ...prev.education,
-                { degree: "", institution: "", year: "" },
+                { degree: "", institution: "", year: "", description: "" },
             ],
         }));
     };
@@ -223,14 +223,14 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
         field: keyof ResumeData["education"][0],
         value: string
     ) => {
-        const newEducation = [...resumeData.education];
-        newEducation[index] = { ...newEducation[index], [field]: value };
-        setResumeData((prev) => ({ ...prev, education: newEducation }));
+        const newEdu = [...resumeData.education];
+        newEdu[index] = { ...newEdu[index], [field]: value };
+        setResumeData((prev) => ({ ...prev, education: newEdu }));
     };
 
     const removeEducation = (index: number) => {
-        const newEducation = resumeData.education.filter((_, i) => i !== index);
-        setResumeData((prev) => ({ ...prev, education: newEducation }));
+        const newEdu = resumeData.education.filter((_, i) => i !== index);
+        setResumeData((prev) => ({ ...prev, education: newEdu }));
     };
 
     const addProject = () => {
@@ -238,37 +238,27 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
             ...prev,
             projects: [
                 ...(prev.projects || []),
-                { name: "", link: "", description: "", technologies: [] },
+                { name: "", description: "", link: "", technologies: [] },
             ],
         }));
     };
 
-    const updateProject = (
-        index: number,
-        field: keyof NonNullable<ResumeData["projects"]>[0],
-        value: string
-    ) => {
-        const newProjects = [...(resumeData.projects || [])];
-        if (field === "technologies") {
-            const techs = value.split(",");
-            newProjects[index] = { ...newProjects[index], technologies: techs };
-        } else {
-            newProjects[index] = { ...newProjects[index], [field]: value };
-        }
-        setResumeData((prev) => ({ ...prev, projects: newProjects }));
-    };
-
-    const updateProjectField = (index: number, field: string, value: string) => {
+    const updateProject = (index: number, field: string, value: any) => {
         const newProjects = [...(resumeData.projects || [])];
         // @ts-ignore
         newProjects[index] = { ...newProjects[index], [field]: value };
         setResumeData((prev) => ({ ...prev, projects: newProjects }));
-    }
+    };
+
+    const updateProjectField = (index: number, field: string, value: string) => {
+        updateProject(index, field, value);
+    };
 
     const removeProject = (index: number) => {
         const newProjects = (resumeData.projects || []).filter((_, i) => i !== index);
         setResumeData((prev) => ({ ...prev, projects: newProjects }));
     };
+
 
     const addCertification = () => {
         setResumeData((prev) => ({
@@ -407,7 +397,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                         </label>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 flex-1 w-full">
                         <InputField
                             label="Full Name"
                             name="name"
@@ -427,7 +417,7 @@ export default function ResumeForm({ resumeData, setResumeData }: ResumeFormProp
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-4">
                     <InputField
                         label="Email Address"
                         name="email"

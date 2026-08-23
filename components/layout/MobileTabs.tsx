@@ -10,29 +10,30 @@ export default function MobileTabs({
     setActiveTab,
 }: MobileTabsProps) {
     return (
-        <div className="md:hidden flex border-b border-gray-200 bg-white sticky top-[73px] z-40">
+        <div className="md:hidden flex items-center border-b border-neutral-200 bg-white/95 backdrop-blur-md sticky top-16 z-40 p-1.5 gap-1.5 shadow-xs">
             <button
                 onClick={() => setActiveTab("edit")}
-                className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "edit"
-                        ? "border-blue-600 text-blue-600"
-                        : "border-transparent text-gray-500"
-                    }`}
+                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2 ${
+                    activeTab === "edit"
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                        : "text-neutral-600 hover:bg-neutral-100"
+                }`}
             >
-                <span className="flex justify-center items-center gap-2">
-                    <PenTool size={16} /> Edit
-                </span>
+                <PenTool className="w-3.5 h-3.5" />
+                <span>Editor View</span>
             </button>
             <button
                 onClick={() => setActiveTab("preview")}
-                className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === "preview"
-                        ? "border-blue-600 text-blue-600"
-                        : "border-transparent text-gray-500"
-                    }`}
+                className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex justify-center items-center gap-2 ${
+                    activeTab === "preview"
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20"
+                        : "text-neutral-600 hover:bg-neutral-100"
+                }`}
             >
-                <span className="flex justify-center items-center gap-2">
-                    <Eye size={16} /> Preview
-                </span>
+                <Eye className="w-3.5 h-3.5" />
+                <span>Live Preview</span>
             </button>
         </div>
     );
 }
+

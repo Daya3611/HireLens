@@ -29,12 +29,13 @@ function BuilderContent() {
     const [isDownloading, setIsDownloading] = useState(false);
 
     // Share & permission state
-    const [isPublicEdit, setIsPublicEdit] = useState(false);
+    const [isPublicEdit, setIsPublicEdit] = useState(true);
     const [allowedEditors, setAllowedEditors] = useState<string[]>([]);
     const [ownerEmail, setOwnerEmail] = useState<string>("");
     const [resumeOwnerId, setResumeOwnerId] = useState<string>("");
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [unauthorized, setUnauthorized] = useState(false);
+
 
     const [resumeData, setResumeData] = useState<ResumeData>({
         name: "John Doe",
@@ -75,8 +76,9 @@ function BuilderContent() {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         const isOwner = currentUser && data.userId === currentUser.uid;
-                        const publicEdit = Boolean(data.isPublicEdit);
+                        const publicEdit = data.isPublicEdit !== false;
                         const editors: string[] = Array.isArray(data.allowedEditors) ? data.allowedEditors : [];
+
                         const userEmail = currentUser?.email?.toLowerCase();
                         const isAllowedEditor = userEmail ? editors.some((e) => e.toLowerCase() === userEmail) : false;
 
